@@ -38,7 +38,8 @@ if __name__ == "__main__":
         "C:\\chromedriver\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe"
     )
 
-    driver = webdriver.Chrome(options=options, service=service, keep_alive=True)
+    driver = webdriver.Chrome(
+        options=options, service=service, keep_alive=True)
 
     # change the property of the navigator value for webdriver to undefined
     driver.execute_script(
@@ -88,6 +89,79 @@ if __name__ == "__main__":
 
     # print(page_code)
     print(driver.title)
+
+    # scrap job data
+    us_indeed_url = "https://www.indeed.com"
+    soup = BeautifulSoup(driver.page_source, "lxml")
+
+    boxes = soup.find_all("div", class_="job_seen_beacon")
+
+    for box in boxes:
+        # Job Title information
+        link = box.find(
+            "a", class_=lambda x: x and "JobTitle" in x).get("href")
+        link_full = us_indeed_url + link
+        job_title = box.find(
+            "a", class_=lambda x: x and "JobTitle" in x).text.strip()
+
+        # Company information
+        company = box.find(
+            "span", {"data-testid": "company-name"}).text.strip()
+
+        # location information
+        location_element = box.find("div", {"data-testid": "text-location"})
+        location = location_element.text.strip()
+
+        # salary information
+        salary_element = box.find(
+            "div", class_=lambda x: x and "css-1a6kja7" in x)
+
+        salary_amount = ""
+        salary_type = ""
+        if salary_element != None:
+            salary_amount_element = salary_element.find(
+                "h2", class_=lambda x: x and "mosaic-provider-jobcards-4n9q2y" in x
+            )
+            if salary_amount_element != None:
+                salary_amount = salary_amount_element.text.strip()
+            salary_type_element = salary_element.find(
+                "span", class_=lambda x: x and "mosaic-provider-jobcards-140tz9m" in x
+            )
+            if salary_type_element != None:
+                salary_type = salary_type_element.text.strip()
+
+        # job type information
+        job_meta_data_group_element = box.find(
+            "div", class_=lambda x: x and "jobMetaDataGroup" in x
+        )
+
+        job_type = ""
+        if job_meta_data_group_element != None:
+            tap_item_gutter_element = job_meta_data_group_element.find(
+                "ul", class_=lambda x: x and "tapItem-gutter" in x
+            )
+            if tap_item_gutter_element != None:
+                meta_datas = tap_item_gutter_element.find_all(
+                    "li", recursive=False)
+                if len(meta_datas) != 0:
+                    meta_data = meta_datas[0]
+                    if meta_data != None:
+                        job_type_element = meta_data.find(
+                            "div", class_=lambda x: x and "css-5ooe72" in x
+                        )
+                        if job_type_element != None:
+                            job_type = job_type_element.text.strip()
+
+        job_info = {
+            "link": link_full,
+            "job_title": job_title,
+            "company": company,
+            "location": location,
+            "salary_amount": salary_amount,
+            "salary_type": salary_type,
+            "job_type": job_type,
+        }
+        print(job_info)
 
     driver.close()
 
