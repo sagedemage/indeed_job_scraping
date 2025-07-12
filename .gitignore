@@ -1,0 +1,4 @@
+venv/
+__pycache__/
+html_content/
+website_screenshots/
