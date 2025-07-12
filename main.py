@@ -6,10 +6,14 @@ from selenium_stealth import stealth
 import pandas as pd
 import sys
 import time
+import configparser
 
 if __name__ == "__main__":
-    query = "desktop+support"
-    location = "United+States"
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    query = config["DEFAULT"]["Query"]
+    location = config["DEFAULT"]["Location"]
+
     us_indeed_url = "https://www.indeed.com"
     url = f"{us_indeed_url}/jobs?q={query}&l={location}"
 
