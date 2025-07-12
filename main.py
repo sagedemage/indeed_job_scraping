@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium_stealth import stealth
+import pandas as pd
 import sys
 import time
 
@@ -65,7 +66,7 @@ if __name__ == "__main__":
             )
     """
 
-    time.sleep(10) # 10 seconds
+    time.sleep(10)  # 10 seconds
 
     driver.get(url)
 
@@ -87,11 +88,23 @@ if __name__ == "__main__":
     print(driver.title)
 
     # scrap job data
+    df = pd.DataFrame({"Job_Title": [],
+                       "Company": [],
+                       "Location": [],
+                       "Salary_Amount": [],
+                       "Salary_Type": [],
+                       "Job_Type": [],
+                       "Link": []})
+
+    job_types = ["Full-time", "Part-time", "Temp-to-hire", "Seasonal", "Per diem", "Freelance",
+                 "Tenure track", "Contract", "Temporary", "Permanent", "Internship", "PRN", "Apprenticeship", "Volunteer"]
+
     us_indeed_url = "https://www.indeed.com"
     soup = BeautifulSoup(driver.page_source, "lxml")
 
     boxes = soup.find_all("div", class_="job_seen_beacon")
 
+    job_count = 0
     for box in boxes:
         # Job Title information
         link = box.find(
@@ -107,6 +120,9 @@ if __name__ == "__main__":
         # location information
         location_element = box.find("div", {"data-testid": "text-location"})
         location = location_element.text.strip()
+
+        # replace non-brekaing space in Latin1 (ISO 8859-1) to a space
+        location = location.replace(u'\xa0', u' ')
 
         # salary information
         salary_element = box.find(
@@ -142,11 +158,30 @@ if __name__ == "__main__":
                 if len(meta_datas) != 0:
                     meta_data = meta_datas[0]
                     if meta_data != None:
-                        job_type_element = meta_data.find(
+                        done = False
+                        meta_data_div_element = meta_data.find(
                             "div", class_=lambda x: x and "css-5ooe72" in x
                         )
-                        if job_type_element != None:
-                            job_type = job_type_element.text.strip()
+                        if meta_data_div_element != None:
+                            if meta_data_div_element.text.strip() in job_types:
+                                job_type = meta_data_div_element.text.strip()
+                                done = True
+                        
+                        meta_data_div_element = meta_data.find(
+                            "div", class_=lambda x: x and "css-48kbdx" in x
+                        )
+                        if meta_data_div_element != None:
+                            if meta_data_div_element.text.strip() in job_types and done == False:
+                                job_type = meta_data_div_element.text.strip()
+                                done = True
+                        
+                        meta_data_div_element = meta_data.find(
+                            "div", class_=lambda x: x and "eu4oa1w0" in x
+                        )
+                        if meta_data_div_element != None:
+                            if meta_data_div_element.text.strip() in job_types and done == False:
+                                job_type = meta_data_div_element.text.strip()
+                                done = True 
 
         job_info = {
             "link": link_full,
@@ -158,6 +193,22 @@ if __name__ == "__main__":
             "job_type": job_type,
         }
         print(job_info)
+
+        job_box_data = pd.DataFrame({"Job_Title": [job_title],
+                                     "Company": [company],
+                                     "Location": [location],
+                                     "Salary_Amount": [salary_amount],
+                                     "Salary_Type": [salary_type],
+                                     "Job_Type": [job_type],
+                                     "Link": [link_full]})
+
+        df = pd.concat([df, job_box_data], ignore_index=True)
+        job_count += 1
+
+    # Write scrap jobs to a CSV file
+    df.to_csv("data/indeed_jobs.csv", index=False)
+
+    print(f"Scraped {job_count} of {total_jobs}")
 
     driver.close()
 
