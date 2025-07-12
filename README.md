@@ -4,12 +4,12 @@ A web scraping program used to scrap the information of jobs in Indeed
 
 Create virtual environment
 ```
-python -m venv venv
+python -m venv .venv
 ```
 
 Activate the virtual environment on Windows
 ```
-.\venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 ```
 
 Install dependencies
