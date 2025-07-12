@@ -118,6 +118,9 @@ if __name__ == "__main__":
         link_full = us_indeed_url + link
         job_title = box.find(
             "a", class_=lambda x: x and "JobTitle" in x).text.strip()
+        
+        # Replace the en dash with a dash
+        job_title = job_title.replace(u'\u2013', u'')
 
         # Company information
         company = box.find(
