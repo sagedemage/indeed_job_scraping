@@ -65,12 +65,10 @@ if __name__ == "__main__":
             )
     """
 
-    # 10 seconds
-    time.sleep(10)
+    time.sleep(10) # 10 seconds
 
     driver.get(url)
 
-    # 10 seconds
     time.sleep(10)
 
     # By.CLASS_NAME
@@ -78,7 +76,6 @@ if __name__ == "__main__":
         By.CLASS_NAME, "jobsearch-JobCountAndSortPane-jobCount"
     )
 
-    # 10 seconds
     time.sleep(10)
 
     total_jobs = job_count_element.find_element(By.XPATH, "./span").text
@@ -87,7 +84,6 @@ if __name__ == "__main__":
 
     page_code = driver.page_source
 
-    # print(page_code)
     print(driver.title)
 
     # scrap job data
