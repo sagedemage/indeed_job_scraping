@@ -30,3 +30,6 @@ For Visual Studio Code to automatically use the virtual environment, the .\\.vsc
     "python.experiments.optOutFrom": ["pythonTerminalEnvVarActivation"]
 }
 ```
+
+## Resources
+* [The following extensions want to relaunch the terminal to contribute to its environment #24822 - microsoft/vscode-python GitHub repository](https://github.com/microsoft/vscode-python/issues/24822)
