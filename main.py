@@ -8,7 +8,8 @@ import sys
 import time
 
 if __name__ == "__main__":
-    url = "https://www.indeed.com/jobs?q=desktop+support&l=United+States"
+    us_indeed_url = "https://www.indeed.com"
+    url = us_indeed_url + "/jobs?q=desktop+support&l=United+States"
 
     options = webdriver.ChromeOptions()
     options.headless = True
@@ -99,7 +100,6 @@ if __name__ == "__main__":
     job_types = ["Full-time", "Part-time", "Temp-to-hire", "Seasonal", "Per diem", "Freelance",
                  "Tenure track", "Contract", "Temporary", "Permanent", "Internship", "PRN", "Apprenticeship", "Volunteer"]
 
-    us_indeed_url = "https://www.indeed.com"
     soup = BeautifulSoup(driver.page_source, "lxml")
 
     boxes = soup.find_all("div", class_="job_seen_beacon")
