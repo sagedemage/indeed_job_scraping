@@ -4,12 +4,12 @@ A web scraping program used to scrap the information of jobs in Indeed
 
 Create virtual environment
 ```
-python -m venv .venv
+python -m venv venv
 ```
 
 Activate the virtual environment on Windows
 ```
-.\.venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
 ```
 
 Install dependencies
@@ -20,4 +20,13 @@ pip install -r requirements.txt
 Run the program
 ```
 python main.py
+```
+
+For Visual Studio Code to automatically use the virtual environment, the .\\.vscode\\settings.json should look like this
+```
+{
+    "python.terminal.activateEnvironment": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.experiments.optOutFrom": ["pythonTerminalEnvVarActivation"]
+}
 ```
