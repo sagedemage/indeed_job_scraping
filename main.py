@@ -7,6 +7,7 @@ import pandas as pd
 import sys
 import time
 import configparser
+import logging
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
@@ -110,6 +111,9 @@ if __name__ == "__main__":
 
     boxes = soup.find_all("div", class_="job_seen_beacon")
 
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(filename="logs/scrap_jobs.log", filemode="w", encoding="utf-8", level=logging.DEBUG)
+
     job_count = 0
     for box in boxes:
         # Job Title information
@@ -193,15 +197,15 @@ if __name__ == "__main__":
                                 done = True 
 
         job_info = {
-            "link": link_full,
             "job_title": job_title,
             "company": company,
             "location": location,
             "salary_amount": salary_amount,
             "salary_type": salary_type,
             "job_type": job_type,
+            "link": link_full
         }
-        print(job_info)
+        logger.debug(job_info)
 
         job_box_data = pd.DataFrame({"Job_Title": [job_title],
                                      "Company": [company],
