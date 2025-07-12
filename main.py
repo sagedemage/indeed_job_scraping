@@ -68,7 +68,6 @@ if __name__ == "__main__":
     time.sleep(10)
 
     driver.get(url)
-    driver.save_screenshot('website_screenshots/nowsecure.png')
 
     # 10 seconds
     time.sleep(10)
@@ -82,6 +81,7 @@ if __name__ == "__main__":
     time.sleep(10)
     
     total_jobs = job_count_element.find_element(By.XPATH, "./span").text
+    driver.save_screenshot('website_screenshots/chromedriver_result.png')
     print(f"{total_jobs} found")
 
     page_code = driver.page_source
