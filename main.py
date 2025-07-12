@@ -8,8 +8,10 @@ import sys
 import time
 
 if __name__ == "__main__":
+    query = "desktop+support"
+    location = "United+States"
     us_indeed_url = "https://www.indeed.com"
-    url = us_indeed_url + "/jobs?q=desktop+support&l=United+States"
+    url = f"{us_indeed_url}/jobs?q={query}&l={location}"
 
     options = webdriver.ChromeOptions()
     options.headless = True
