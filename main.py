@@ -11,42 +11,42 @@ if __name__ == "__main__":
 
     options = webdriver.ChromeOptions()
     options.headless = True
-    
+
     # starts the browser maximized
     options.add_argument("--start-maximized")
-    
+
     # disables setting navigator.webdriver to true
     options.add_argument("--disable-blink-features=AutomationControlled")
-    
+
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
-    # Override the default user agent with a custom one 
+    # Override the default user agent with a custom one
     options.add_argument(f"--user-agent={user_agent}")
-    
+
     # disables the sandbox for all process types
-    options.add_argument('--no-sandbox')
-    
+    options.add_argument("--no-sandbox")
+
     # exclude the enable-automation default argument
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    
+
     # disables the driver to install other chrome extensions
-    options.add_experimental_option('useAutomationExtension', False)
-    
+    options.add_experimental_option("useAutomationExtension", False)
+
     # Runs in headless mode
     options.add_argument("--headless")
-    
-    service = Service("C:\\chromedriver\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe")
-    
-    driver = webdriver.Chrome(
-        options=options,
-        service=service,
-        keep_alive=True
+
+    service = Service(
+        "C:\\chromedriver\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe"
     )
-    
+
+    driver = webdriver.Chrome(options=options, service=service, keep_alive=True)
+
     # change the property of the navigator value for webdriver to undefined
-    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-    
+    driver.execute_script(
+        "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+    )
+
     navigator_webdriver = driver.execute_script("return navigator.webdriver")
-    
+
     if navigator_webdriver != None:
         print("Error: the navigator.webdriver flag should be disabled")
         sys.exit(1)
@@ -74,14 +74,14 @@ if __name__ == "__main__":
 
     # By.CLASS_NAME
     job_count_element = driver.find_element(
-        By.CLASS_NAME, 'jobsearch-JobCountAndSortPane-jobCount'
+        By.CLASS_NAME, "jobsearch-JobCountAndSortPane-jobCount"
     )
-    
+
     # 10 seconds
     time.sleep(10)
-    
+
     total_jobs = job_count_element.find_element(By.XPATH, "./span").text
-    driver.save_screenshot('website_screenshots/chromedriver_result.png')
+    driver.save_screenshot("website_screenshots/chromedriver_result.png")
     print(f"{total_jobs} found")
 
     page_code = driver.page_source
