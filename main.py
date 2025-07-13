@@ -92,8 +92,6 @@ if __name__ == "__main__":
     driver.save_screenshot("website_screenshots/chromedriver_result.png")
     print(f"{total_jobs} found")
 
-    page_code = driver.page_source
-
     print(driver.title)
 
     # scrap job data
@@ -224,7 +222,7 @@ if __name__ == "__main__":
 
     print(f"Scraped {job_count} of {total_jobs}")
 
-    driver.close()
-
     with open("html_content/site.html", "w", encoding="utf-8") as f:
-        f.write(str(page_code))
+        f.write(str(driver.page_source))
+
+    driver.close()
