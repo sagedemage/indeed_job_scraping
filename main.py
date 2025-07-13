@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     time.sleep(10)
 
-    # By.CLASS_NAME
+    # Get the number of jobs
     job_count_element = driver.find_element(
         By.CLASS_NAME, "jobsearch-JobCountAndSortPane-jobCount"
     )
