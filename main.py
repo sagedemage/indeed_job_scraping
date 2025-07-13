@@ -14,9 +14,10 @@ if __name__ == "__main__":
     config.read('config.ini')
     query = config["DEFAULT"]["Query"]
     location = config["DEFAULT"]["Location"]
+    date_posted_in_days = config["DEFAULT"]["DatePostedInDays"]
 
     us_indeed_url = "https://www.indeed.com"
-    url = f"{us_indeed_url}/jobs?q={query}&l={location}"
+    url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}"
 
     options = webdriver.ChromeOptions()
     options.headless = True
