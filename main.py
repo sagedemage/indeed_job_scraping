@@ -2,22 +2,27 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium_stealth import stealth
 import pandas as pd
+from pandas import DataFrame
 import sys
 import time
 import configparser
 import logging
 
-if __name__ == "__main__":
+
+def main():
     config = configparser.ConfigParser()
     config.read('config.ini')
     query = config["DEFAULT"]["Query"]
-    location = config["DEFAULT"]["Location"]
+    # location = config["DEFAULT"]["Location"]
+    locations = ["New+Jersey", "New+York", "Pennsylvania", "Connecticut", "Massachusetts",
+                "Rhode+Island", "Maryland", "Delaware", "Virginia", "North+Carolina", "South+Carolina", "Georgia"]
+
     date_posted_in_days = config["DEFAULT"]["DatePostedInDays"]
 
     us_indeed_url = "https://www.indeed.com"
-    url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}"
 
     options = webdriver.ChromeOptions()
     options.headless = True
@@ -72,9 +77,32 @@ if __name__ == "__main__":
             renderer="Intel Iris OpenGL Engine",
             fix_hairline=True,
             #webdriver=False
-            )
+        )
     """
 
+    df = pd.DataFrame({"Job_Title": [],
+                       "Company": [],
+                       "Location": [],
+                       "Salary_Amount": [],
+                       "Salary_Type": [],
+                       "Job_Type": [],
+                       "Link": []})
+
+    # ----- Start -----
+
+    for location in locations:
+        url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}"
+        df = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
+
+    # ----- End -----
+
+    # Write scrap jobs to a CSV file
+    df.to_csv("data/indeed_jobs.csv", index=False)
+
+    driver.close()
+
+
+def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: DataFrame) -> DataFrame:
     time.sleep(10)  # 10 seconds
 
     driver.get(url)
@@ -95,14 +123,6 @@ if __name__ == "__main__":
     print(driver.title)
 
     # scrap job data
-    df = pd.DataFrame({"Job_Title": [],
-                       "Company": [],
-                       "Location": [],
-                       "Salary_Amount": [],
-                       "Salary_Type": [],
-                       "Job_Type": [],
-                       "Link": []})
-
     job_types = ["Full-time", "Part-time", "Temp-to-hire", "Seasonal", "Per diem", "Freelance",
                  "Tenure track", "Contract", "Temporary", "Permanent", "Internship", "PRN", "Apprenticeship", "Volunteer"]
 
@@ -111,7 +131,8 @@ if __name__ == "__main__":
     boxes = soup.find_all("div", class_="job_seen_beacon")
 
     logger = logging.getLogger(__name__)
-    logging.basicConfig(filename="logs/scrap_jobs.log", filemode="w", encoding="utf-8", level=logging.DEBUG)
+    logging.basicConfig(filename="logs/scrap_jobs.log",
+                        filemode="w", encoding="utf-8", level=logging.DEBUG)
 
     job_count = 0
     for box in boxes:
@@ -121,7 +142,7 @@ if __name__ == "__main__":
         link_full = us_indeed_url + link
         job_title = box.find(
             "a", class_=lambda x: x and "JobTitle" in x).text.strip()
-        
+
         # Replace the en dash with a dash
         job_title = job_title.replace(u'\u2013', u'-')
 
@@ -178,7 +199,7 @@ if __name__ == "__main__":
                             if meta_data_div_element.text.strip() in job_types:
                                 job_type = meta_data_div_element.text.strip()
                                 done = True
-                        
+
                         meta_data_div_element = meta_data.find(
                             "div", class_=lambda x: x and "css-48kbdx" in x
                         )
@@ -186,14 +207,14 @@ if __name__ == "__main__":
                             if meta_data_div_element.text.strip() in job_types and done == False:
                                 job_type = meta_data_div_element.text.strip()
                                 done = True
-                        
+
                         meta_data_div_element = meta_data.find(
                             "div", class_=lambda x: x and "eu4oa1w0" in x
                         )
                         if meta_data_div_element != None:
                             if meta_data_div_element.text.strip() in job_types and done == False:
                                 job_type = meta_data_div_element.text.strip()
-                                done = True 
+                                done = True
 
         job_info = {
             "job_title": job_title,
@@ -217,12 +238,13 @@ if __name__ == "__main__":
         df = pd.concat([df, job_box_data], ignore_index=True)
         job_count += 1
 
-    # Write scrap jobs to a CSV file
-    df.to_csv("data/indeed_jobs.csv", index=False)
-
     print(f"Scraped {job_count} of {total_jobs}")
 
     with open("html_content/site.html", "w", encoding="utf-8") as f:
         f.write(str(driver.page_source))
+    
+    return df
 
-    driver.close()
+
+if __name__ == "__main__":
+    main()
