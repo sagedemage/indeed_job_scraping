@@ -16,9 +16,9 @@ def main():
     config = configparser.ConfigParser()
     config.read('config.ini')
     query = config["DEFAULT"]["Query"]
-    # location = config["DEFAULT"]["Location"]
-    locations = ["New+Jersey", "New+York", "Pennsylvania", "Connecticut", "Massachusetts",
-                "Rhode+Island", "Maryland", "Delaware", "Virginia", "North+Carolina", "South+Carolina", "Georgia"]
+    locations_string = config["DEFAULT"]["Locations"]
+    locations_string = locations_string.strip("\"")
+    locations = locations_string.split(",")
 
     date_posted_in_days = config["DEFAULT"]["DatePostedInDays"]
 
