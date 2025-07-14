@@ -6,3 +6,4 @@ website_screenshots/
 .vscode/
 data/
 logs/
+node_modules/

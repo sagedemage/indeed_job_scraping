@@ -1,0 +1,24 @@
+body {
+  font: 14px Arial, Verdana, Helvetica, Tahoma, "Trebuchet MS", sans-serif;
+  margin: 0;
+}
+
+main {
+  /* top and bottom, and right and left paddings */
+  padding: 1% 4%;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#navbar {
+  background-color: rgb(46, 46, 46);
+  padding: 20px;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  margin-right: 10px;
+}
