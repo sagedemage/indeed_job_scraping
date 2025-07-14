@@ -6,6 +6,7 @@ body {
 main {
   /* top and bottom, and right and left paddings */
   padding: 1% 4%;
+  margin-top: 4%;
 }
 
 a {
@@ -15,6 +16,9 @@ a {
 #navbar {
   background-color: rgb(46, 46, 46);
   padding: 20px;
+  position: fixed;
+  top: 0;
+  width: 100%;
 }
 
 .nav-link {
