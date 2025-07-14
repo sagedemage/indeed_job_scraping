@@ -1,8 +1,15 @@
-var express = require('express');
-var router = express.Router();
+export var router = express.Router();
+
+import express from "express"
+import fetch from "node-fetch"
+
+const backend_url = "http://localhost:8000"
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', async function(req, res, next) {
+  const response = await fetch(`${backend_url}/job-data`)
+  const data = await response.json();
+  console.log(data)
   res.render('index', { title: 'Express' });
 });
 
@@ -13,5 +20,3 @@ router.get('/about', function(req, res, next) {
 router.get('/jobs', function(req, res, next) {
   res.render('jobs', { title: 'Indeed Jobs' });
 });
-
-module.exports = router;
