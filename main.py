@@ -90,9 +90,15 @@ def main():
 
     # ----- Start -----
 
+    end = 20
+
     for location in locations:
-        url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}"
-        df = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
+        for i in range(0, end, 10):
+            url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}&start={i}"
+            df, end = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
+
+            if end < 10 + 10*(i+1):
+                break
 
     # ----- End -----
 
@@ -117,6 +123,10 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
     time.sleep(10)
 
     total_jobs = job_count_element.find_element(By.XPATH, "./span").text
+    
+    end_string = total_jobs.strip(" jobs")
+    end = int(end_string)
+
     driver.save_screenshot("website_screenshots/chromedriver_result.png")
     print(f"{total_jobs} found")
 
@@ -149,6 +159,9 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
         # Company information
         company = box.find(
             "span", {"data-testid": "company-name"}).text.strip()
+        
+        # Replace e-grave with e
+        company = company.replace("\u00E8", "e")
 
         # location information
         location_element = box.find("div", {"data-testid": "text-location"})
@@ -243,7 +256,7 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
     with open("html_content/site.html", "w", encoding="utf-8") as f:
         f.write(str(driver.page_source))
     
-    return df
+    return df, end
 
 
 if __name__ == "__main__":
