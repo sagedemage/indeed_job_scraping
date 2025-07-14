@@ -88,19 +88,14 @@ def main():
                        "Job_Type": [],
                        "Link": []})
 
-    # ----- Start -----
-
-    end = 20
-
+    """Job Scraping"""
     for location in locations:
-        for i in range(0, end, 10):
+        for i in range(0, 100, 10):
             url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}&start={i}"
             df, end = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
 
             if end < 10 + 10*(i+1):
                 break
-
-    # ----- End -----
 
     # Write scrap jobs to a CSV file
     df.to_csv("data/indeed_jobs.csv", index=False)
@@ -115,20 +110,28 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
 
     time.sleep(10)
 
-    # Get the number of jobs
-    job_count_element = driver.find_element(
-        By.CLASS_NAME, "jobsearch-JobCountAndSortPane-jobCount"
-    )
+    total_jobs = ""
+    try:
+        # Get the number of jobs
+        job_count_element = driver.find_element(
+            By.CLASS_NAME, "jobsearch-JobCountAndSortPane-jobCount"
+        )
 
-    time.sleep(10)
+        time.sleep(10)
 
-    total_jobs = job_count_element.find_element(By.XPATH, "./span").text
+        total_jobs = job_count_element.find_element(By.XPATH, "./span").text
+        print(f"{total_jobs} found")
     
-    end_string = total_jobs.strip(" jobs")
-    end = int(end_string)
+    except Exception as e: 
+        print(e)
+    
+    end = 0
+    if total_jobs != "":
+        end_string = total_jobs.strip(" jobs")
+        end_string = end_string.strip("+")
+        end = int(end_string)
 
     driver.save_screenshot("website_screenshots/chromedriver_result.png")
-    print(f"{total_jobs} found")
 
     print(driver.title)
 
