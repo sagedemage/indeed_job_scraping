@@ -1,2 +1,14 @@
 <h1>{{title}}</h1>
 <p>Welcome to the {{title}} page.</p>
+
+{{#each rows}}
+    <p>
+        Job Title: {{this.Job_Title}}<br>
+        Company: {{this.Company}}<br>
+        Location: {{this.Location}}<br>
+        Salary: {{this.Salary_Amount}} {{this.Salary_Type}}<br>
+        Job Type: {{this.Job_Type}}<br>
+        Link: <a href="{{this.Link}}">click here</a>
+    </p>
+{{/each}}
+

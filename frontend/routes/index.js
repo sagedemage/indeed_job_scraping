@@ -17,6 +17,5 @@ router.get('/about', function(req, res, next) {
 router.get('/jobs', async function(req, res, next) {
   const response = await fetch(`${backend_url}/job-data`)
   const data = await response.json();
-  //console.log(data)
-  res.render('jobs', { title: 'Indeed Jobs', data: data });
+  res.render('jobs', { title: 'Indeed Jobs', rows: data.rows });
 });
