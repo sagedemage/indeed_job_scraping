@@ -2,13 +2,13 @@
 <p>Welcome to the {{title}} page.</p>
 
 {{#each rows}}
-    <p>
-        Job Title: {{this.Job_Title}}<br>
-        Company: {{this.Company}}<br>
-        Location: {{this.Location}}<br>
-        Salary: {{this.Salary_Amount}} {{this.Salary_Type}}<br>
-        Job Type: {{this.Job_Type}}<br>
-        Link: <a href="{{this.Link}}" target="_blank">click here</a>
+    <p class="job-posting">
+        <span class="job-title">{{this.Job_Title}}</span><br>
+        {{this.Company}}<br>
+        {{this.Location}}<br>
+        <span class="salary">{{this.Salary_Amount}}</span> {{this.Salary_Type}}<br>
+        <span class="job-type">{{this.Job_Type}}</span><br>
+        <a href="{{this.Link}}" target="_blank"><button class="apply">Apply</button></a>
     </p>
 {{/each}}
 
