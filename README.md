@@ -2,6 +2,8 @@
 
 A web scraping program used to scrap the information of jobs in Indeed
 
+## Setup the Project
+
 Create virtual environment
 ```
 python -m venv venv
@@ -17,9 +19,28 @@ Install dependencies
 pip install -r requirements.txt
 ```
 
+Install dependencies for the front-end server
+```
+cd frontend
+npm install
+```
+
+## Run the Project
+
 Run the program
 ```
 python main.py
+```
+
+Run the backend server with
+```
+fastapi dev backend\main.py
+```
+
+Run the front-end server
+```
+cd frontend
+npm start
 ```
 
 For Visual Studio Code to automatically use the virtual environment, the .\\.vscode\\settings.json should look like this
@@ -29,11 +50,6 @@ For Visual Studio Code to automatically use the virtual environment, the .\\.vsc
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.experiments.optOutFrom": ["pythonTerminalEnvVarActivation"]
 }
-```
-
-Run the backend server with
-```
-fastapi dev backend\main.py
 ```
 
 ## Resources
