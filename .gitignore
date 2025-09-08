@@ -1,9 +1,10 @@
 venv/
 .venv/
 __pycache__/
-html_content/
 website_screenshots/
 .vscode/
-data/
-logs/
+html_content/*.html
+data/*.csv
+logs/*.log
 node_modules/
+.idea/
