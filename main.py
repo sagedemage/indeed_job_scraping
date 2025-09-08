@@ -16,9 +16,7 @@ def main():
     config = configparser.ConfigParser()
     config.read('config.ini')
     query = config["DEFAULT"]["Query"]
-    locations_string = config["DEFAULT"]["Locations"]
-    locations_string = locations_string.strip("\"")
-    locations = locations_string.split(",")
+    location = config["DEFAULT"]["Location"]
 
     date_posted_in_days = config["DEFAULT"]["DatePostedInDays"]
 
@@ -49,9 +47,7 @@ def main():
     # Runs in headless mode
     options.add_argument("--headless")
 
-    service = Service(
-        "C:\\chromedriver\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe"
-    )
+    service = Service()
 
     driver = webdriver.Chrome(
         options=options, service=service, keep_alive=True)
@@ -67,19 +63,6 @@ def main():
         print("Error: the navigator.webdriver flag should be disabled")
         sys.exit(1)
 
-    """
-    stealth(driver,
-            user_agent = user_agent,
-            languages=["en-US", "en"],
-            vendor="Google Inc.",
-            platform="Win32",
-            webgl_vendor="Intel Inc.",
-            renderer="Intel Iris OpenGL Engine",
-            fix_hairline=True,
-            #webdriver=False
-        )
-    """
-
     df = pd.DataFrame({"Job_Title": [],
                        "Company": [],
                        "Location": [],
@@ -89,13 +72,9 @@ def main():
                        "Link": []})
 
     """Job Scraping"""
-    for location in locations:
-        for i in range(0, 100, 10):
-            url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}&start={i}"
-            df, end = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
+    url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}&start=0"
+    df, end = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
 
-            if end < 10 + 10*(i+1):
-                break
 
     # Write scrap jobs to a CSV file
     df.to_csv("data/indeed_jobs.csv", index=False)
@@ -104,11 +83,9 @@ def main():
 
 
 def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: DataFrame) -> DataFrame:
-    time.sleep(10)  # 10 seconds
+    time.sleep(2)  # 10 seconds
 
     driver.get(url)
-
-    time.sleep(10)
 
     total_jobs = ""
     try:
@@ -116,8 +93,6 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
         job_count_element = driver.find_element(
             By.CLASS_NAME, "jobsearch-JobCountAndSortPane-jobCount"
         )
-
-        time.sleep(10)
 
         total_jobs = job_count_element.find_element(By.XPATH, "./span").text
         print(f"{total_jobs} found")
