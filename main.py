@@ -83,7 +83,7 @@ def main():
 
 
 def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: DataFrame) -> DataFrame:
-    time.sleep(2)  # 10 seconds
+    time.sleep(2)
 
     driver.get(url)
 
