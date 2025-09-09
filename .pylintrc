@@ -411,7 +411,7 @@ indent-after-paren=4
 #####################
 
 # Expected format of line ending, e.g. empty (any line ending), LF or CRLF.
-expected-line-ending-format=LF
+expected-line-ending-format=CRLF
 
 
 [BASIC]

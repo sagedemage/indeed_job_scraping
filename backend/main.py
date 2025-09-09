@@ -1,3 +1,5 @@
+"""Backend Server for serving job data"""
+
 from flask import Flask
 import pandas as pd
 
@@ -22,4 +24,4 @@ def job_data():
     for i in range(len(df.index)):
         rows.append(df.loc[i].to_dict())
 
-    return { "rows": rows }
+    return {"rows": rows}

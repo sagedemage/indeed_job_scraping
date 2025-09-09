@@ -1,7 +1,10 @@
+"""Indeed Job Scraper Program"""
+
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
 from pandas import DataFrame
 import sys
@@ -9,9 +12,10 @@ import time
 import configparser
 import logging
 
+
 def main():
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read("config.ini")
     query = config["DEFAULT"]["Query"]
     location = config["DEFAULT"]["Location"]
 
@@ -54,15 +58,19 @@ def main():
         print("Error: the navigator.webdriver flag should be disabled")
         sys.exit(1)
 
-    df = pd.DataFrame({"Job_Title": [],
-                       "Company": [],
-                       "Location": [],
-                       "Salary_Amount": [],
-                       "Salary_Type": [],
-                       "Job_Type": [],
-                       "Link": []})
+    df = pd.DataFrame(
+        {
+            "Job_Title": [],
+            "Company": [],
+            "Location": [],
+            "Salary_Amount": [],
+            "Salary_Type": [],
+            "Job_Type": [],
+            "Link": [],
+        }
+    )
 
-    """Job Scraping"""
+    # job scraping
     url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}&start=0"
     df, msg = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
     print(msg)
@@ -73,7 +81,9 @@ def main():
     driver.close()
 
 
-def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: DataFrame) -> tuple[DataFrame, str]:
+def scrap_indeed_jobs_page(
+    driver: WebDriver, url: str, us_indeed_url: str, df: DataFrame
+) -> tuple[DataFrame, str]:
     driver.get(url)
 
     time.sleep(10)
@@ -94,62 +104,81 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
         total_jobs = job_count_element.find_element(By.XPATH, "./span").text
         print(f"{total_jobs} found")
 
-    except Exception as e:
+    except NoSuchElementException as e:
         print(e)
 
     # scrap job data
-    job_types = ["Full-time", "Part-time", "Temp-to-hire", "Seasonal", "Per diem", "Freelance",
-                 "Tenure track", "Contract", "Temporary", "Permanent", "Internship", "PRN", "Apprenticeship",
-                 "Volunteer"]
+    job_types = [
+        "Full-time",
+        "Part-time",
+        "Temp-to-hire",
+        "Seasonal",
+        "Per diem",
+        "Freelance",
+        "Tenure track",
+        "Contract",
+        "Temporary",
+        "Permanent",
+        "Internship",
+        "PRN",
+        "Apprenticeship",
+        "Volunteer",
+    ]
 
     soup = BeautifulSoup(driver.page_source, "lxml")
 
     boxes = soup.find_all("div", class_="job_seen_beacon")
 
     logger = logging.getLogger(__name__)
-    logging.basicConfig(filename="logs/scrap_jobs.log",
-                        filemode="w", encoding="utf-8", level=logging.DEBUG)
+    logging.basicConfig(
+        filename="logs/scrap_jobs.log",
+        filemode="w",
+        encoding="utf-8",
+        level=logging.DEBUG,
+    )
 
     job_count = 0
     for box in boxes:
         # Job Title information
-        link = box.find(
-            "a", class_=lambda x: x and "JobTitle" in x).get("href")
+        link = box.find("a", class_=lambda x: x and "JobTitle" in x).get("href")
         link_full = us_indeed_url + link
         job_title = box.find(
-            "a", class_=lambda x: x and "JobTitle" in x).text.strip()
+            "a", class_=lambda x: x and "JobTitle" in x
+        ).text.strip()
 
         # Replace the en dash with a dash
-        job_title = job_title.replace(u'\u2013', u'-')
+        job_title = job_title.replace("\u2013", "-")
 
         # Company information
-        company = box.find(
-            "span", {"data-testid": "company-name"}).text.strip()
+        company = box.find("span", {"data-testid": "company-name"}).text.strip()
 
         # Replace e-grave with e
-        company = company.replace("\u00E8", "e")
+        company = company.replace("\u00e8", "e")
 
         # location information
         location_element = box.find("div", {"data-testid": "text-location"})
         location = location_element.text.strip()
 
         # replace non-brekaing space in Latin1 (ISO 8859-1) to a space
-        location = location.replace(u'\xa0', u' ')
+        location = location.replace("\xa0", " ")
 
         # salary information
         salary_element = box.find(
-            "div", class_=lambda x: x and "css-1a6kja7" in x)
+            "div", class_=lambda x: x and "css-1a6kja7" in x
+        )
 
         salary_amount = ""
         salary_type = ""
         if salary_element is not None:
             salary_amount_element = salary_element.find(
-                "h2", class_=lambda x: x and "mosaic-provider-jobcards-4n9q2y" in x
+                "h2",
+                class_=lambda x: x and "mosaic-provider-jobcards-4n9q2y" in x,
             )
             if salary_amount_element is not None:
                 salary_amount = salary_amount_element.text.strip()
             salary_type_element = salary_element.find(
-                "span", class_=lambda x: x and "mosaic-provider-jobcards-140tz9m" in x
+                "span",
+                class_=lambda x: x and "mosaic-provider-jobcards-140tz9m" in x,
             )
             if salary_type_element is not None:
                 salary_type = salary_type_element.text.strip()
@@ -166,7 +195,8 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
             )
             if tap_item_gutter_element is not None:
                 meta_datas = tap_item_gutter_element.find_all(
-                    "li", recursive=False)
+                    "li", recursive=False
+                )
                 if len(meta_datas) != 0:
                     meta_data = meta_datas[0]
                     if meta_data is not None:
@@ -183,7 +213,10 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
                             "div", class_=lambda x: x and "css-48kbdx" in x
                         )
                         if meta_data_div_element is not None:
-                            if meta_data_div_element.text.strip() in job_types and done == False:
+                            if (
+                                meta_data_div_element.text.strip() in job_types
+                                and done is False
+                            ):
                                 job_type = meta_data_div_element.text.strip()
                                 done = True
 
@@ -191,7 +224,10 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
                             "div", class_=lambda x: x and "eu4oa1w0" in x
                         )
                         if meta_data_div_element is not None:
-                            if meta_data_div_element.text.strip() in job_types and done == False:
+                            if (
+                                meta_data_div_element.text.strip() in job_types
+                                and done is False
+                            ):
                                 job_type = meta_data_div_element.text.strip()
                                 done = True
 
@@ -202,27 +238,31 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
             "salary_amount": salary_amount,
             "salary_type": salary_type,
             "job_type": job_type,
-            "link": link_full
+            "link": link_full,
         }
         logger.debug(job_info)
 
-        job_box_data = pd.DataFrame({"Job_Title": [job_title],
-                                     "Company": [company],
-                                     "Location": [location],
-                                     "Salary_Amount": [salary_amount],
-                                     "Salary_Type": [salary_type],
-                                     "Job_Type": [job_type],
-                                     "Link": [link_full]})
+        job_box_data = pd.DataFrame(
+            {
+                "Job_Title": [job_title],
+                "Company": [company],
+                "Location": [location],
+                "Salary_Amount": [salary_amount],
+                "Salary_Type": [salary_type],
+                "Job_Type": [job_type],
+                "Link": [link_full],
+            }
+        )
 
         df = pd.concat([df, job_box_data], ignore_index=True)
         job_count += 1
 
-    print(f"Scraped {job_count} of {total_jobs}")
+    print(f"Scraped {job_count} jobs")
 
     with open("html_content/site.html", "w", encoding="utf-8") as f:
         f.write(str(driver.page_source))
 
-    return df, "Sucess"
+    return df, "Success"
 
 
 if __name__ == "__main__":
