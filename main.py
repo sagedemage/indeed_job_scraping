@@ -1,16 +1,13 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium_stealth import stealth
 import pandas as pd
 from pandas import DataFrame
 import sys
 import time
 import configparser
 import logging
-
 
 def main():
     config = configparser.ConfigParser()
@@ -23,7 +20,14 @@ def main():
     us_indeed_url = "https://www.indeed.com"
 
     options = webdriver.ChromeOptions()
-    options.headless = True
+
+    temp_driver = webdriver.Chrome(keep_alive=False)
+    version = temp_driver.capabilities["browserVersion"]
+    temp_driver.close()
+
+    user_agent = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{version} Safari/537.36"
+    # Override the default user agent with a custom one
+    options.add_argument(f"--user-agent={user_agent}")
 
     # starts the browser maximized
     options.add_argument("--start-maximized")
@@ -31,26 +35,13 @@ def main():
     # disables setting navigator.webdriver to true
     options.add_argument("--disable-blink-features=AutomationControlled")
 
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
-    # Override the default user agent with a custom one
-    options.add_argument(f"--user-agent={user_agent}")
-
-    # disables the sandbox for all process types
-    options.add_argument("--no-sandbox")
-
     # exclude the enable-automation default argument
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
 
     # disables the driver to install other chrome extensions
     options.add_experimental_option("useAutomationExtension", False)
 
-    # Runs in headless mode
-    options.add_argument("--headless")
-
-    service = Service()
-
-    driver = webdriver.Chrome(
-        options=options, service=service, keep_alive=True)
+    driver = webdriver.Chrome(options=options)
 
     # change the property of the navigator value for webdriver to undefined
     driver.execute_script(
@@ -59,7 +50,7 @@ def main():
 
     navigator_webdriver = driver.execute_script("return navigator.webdriver")
 
-    if navigator_webdriver != None:
+    if navigator_webdriver is not None:
         print("Error: the navigator.webdriver flag should be disabled")
         sys.exit(1)
 
@@ -73,8 +64,8 @@ def main():
 
     """Job Scraping"""
     url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}&start=0"
-    df, end = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
-
+    df, msg = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
+    print(msg)
 
     # Write scrap jobs to a CSV file
     df.to_csv("data/indeed_jobs.csv", index=False)
@@ -82,12 +73,18 @@ def main():
     driver.close()
 
 
-def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: DataFrame) -> DataFrame:
-    time.sleep(2)
-
+def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: DataFrame) -> tuple[DataFrame, str]:
     driver.get(url)
 
-    total_jobs = ""
+    time.sleep(10)
+
+    print(driver.title)
+
+    driver.save_screenshot("website_screenshots/chromedriver_result.png")
+
+    if driver.title == "Just a moment...":
+        return df, "Unable to load web page"
+
     try:
         # Get the number of jobs
         job_count_element = driver.find_element(
@@ -96,23 +93,14 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
 
         total_jobs = job_count_element.find_element(By.XPATH, "./span").text
         print(f"{total_jobs} found")
-    
-    except Exception as e: 
+
+    except Exception as e:
         print(e)
-    
-    end = 0
-    if total_jobs != "":
-        end_string = total_jobs.strip(" jobs")
-        end_string = end_string.strip("+")
-        end = int(end_string)
-
-    driver.save_screenshot("website_screenshots/chromedriver_result.png")
-
-    print(driver.title)
 
     # scrap job data
     job_types = ["Full-time", "Part-time", "Temp-to-hire", "Seasonal", "Per diem", "Freelance",
-                 "Tenure track", "Contract", "Temporary", "Permanent", "Internship", "PRN", "Apprenticeship", "Volunteer"]
+                 "Tenure track", "Contract", "Temporary", "Permanent", "Internship", "PRN", "Apprenticeship",
+                 "Volunteer"]
 
     soup = BeautifulSoup(driver.page_source, "lxml")
 
@@ -137,7 +125,7 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
         # Company information
         company = box.find(
             "span", {"data-testid": "company-name"}).text.strip()
-        
+
         # Replace e-grave with e
         company = company.replace("\u00E8", "e")
 
@@ -154,16 +142,16 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
 
         salary_amount = ""
         salary_type = ""
-        if salary_element != None:
+        if salary_element is not None:
             salary_amount_element = salary_element.find(
                 "h2", class_=lambda x: x and "mosaic-provider-jobcards-4n9q2y" in x
             )
-            if salary_amount_element != None:
+            if salary_amount_element is not None:
                 salary_amount = salary_amount_element.text.strip()
             salary_type_element = salary_element.find(
                 "span", class_=lambda x: x and "mosaic-provider-jobcards-140tz9m" in x
             )
-            if salary_type_element != None:
+            if salary_type_element is not None:
                 salary_type = salary_type_element.text.strip()
 
         # job type information
@@ -172,21 +160,21 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
         )
 
         job_type = ""
-        if job_meta_data_group_element != None:
+        if job_meta_data_group_element is not None:
             tap_item_gutter_element = job_meta_data_group_element.find(
                 "ul", class_=lambda x: x and "tapItem-gutter" in x
             )
-            if tap_item_gutter_element != None:
+            if tap_item_gutter_element is not None:
                 meta_datas = tap_item_gutter_element.find_all(
                     "li", recursive=False)
                 if len(meta_datas) != 0:
                     meta_data = meta_datas[0]
-                    if meta_data != None:
+                    if meta_data is not None:
                         done = False
                         meta_data_div_element = meta_data.find(
                             "div", class_=lambda x: x and "css-5ooe72" in x
                         )
-                        if meta_data_div_element != None:
+                        if meta_data_div_element is not None:
                             if meta_data_div_element.text.strip() in job_types:
                                 job_type = meta_data_div_element.text.strip()
                                 done = True
@@ -194,7 +182,7 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
                         meta_data_div_element = meta_data.find(
                             "div", class_=lambda x: x and "css-48kbdx" in x
                         )
-                        if meta_data_div_element != None:
+                        if meta_data_div_element is not None:
                             if meta_data_div_element.text.strip() in job_types and done == False:
                                 job_type = meta_data_div_element.text.strip()
                                 done = True
@@ -202,7 +190,7 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
                         meta_data_div_element = meta_data.find(
                             "div", class_=lambda x: x and "eu4oa1w0" in x
                         )
-                        if meta_data_div_element != None:
+                        if meta_data_div_element is not None:
                             if meta_data_div_element.text.strip() in job_types and done == False:
                                 job_type = meta_data_div_element.text.strip()
                                 done = True
@@ -233,8 +221,8 @@ def scrap_indeed_jobs_page(driver: WebDriver, url: str, us_indeed_url: str, df: 
 
     with open("html_content/site.html", "w", encoding="utf-8") as f:
         f.write(str(driver.page_source))
-    
-    return df, end
+
+    return df, "Sucess"
 
 
 if __name__ == "__main__":
