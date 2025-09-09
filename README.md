@@ -34,7 +34,7 @@ python main.py
 
 Run the backend server with
 ```
-fastapi dev backend\main.py
+flask --app backend\main.py run
 ```
 
 Run the front-end server

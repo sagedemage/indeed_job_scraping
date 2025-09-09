@@ -2,4 +2,4 @@ selenium==4.34.2
 beautifulsoup4==4.12.2
 lxml==6.0.0
 pandas==2.3.1
-fastapi[standard]==0.116.1
+Flask==3.1.2
