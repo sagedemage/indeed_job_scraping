@@ -1,8 +1,7 @@
-from typing import Union
-from fastapi import FastAPI
+from flask import Flask
 import pandas as pd
 
-app = FastAPI()
+app = Flask(__name__)
 
 csv_file = "data/indeed_jobs.csv"
 
@@ -21,6 +20,6 @@ def job_data():
 
     rows = []
     for i in range(len(df.index)):
-        rows.append(df.loc[i])
+        rows.append(df.loc[i].to_dict())
 
     return { "rows": rows }

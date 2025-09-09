@@ -3,7 +3,7 @@ export var router = express.Router();
 import express from "express"
 import fetch from "node-fetch"
 
-const backend_url = "http://localhost:8000"
+const backend_url = "http://localhost:5000"
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

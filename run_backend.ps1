@@ -1,1 +1,1 @@
-fastapi dev backend\main.py
+flask --app backend\main.py run
