@@ -1,7 +1,7 @@
 venv/
 .venv/
 __pycache__/
-website_screenshots/
+website_screenshots/*.png
 .vscode/
 html_content/*.html
 data/*.csv
