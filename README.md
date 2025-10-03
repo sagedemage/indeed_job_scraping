@@ -47,6 +47,8 @@ cd frontend
 npm start
 ```
 
+## Tools to Format and Lint the Codebase 
+
 Format the codebase
 ```
 black main.py backend/*.py
@@ -56,6 +58,8 @@ Lint the codebase
 ```
 pylint main.py backend/*.py
 ```
+
+## Setup VSCode for Python
 
 For Visual Studio Code to automatically use the virtual environment, the .\\.vscode\\settings.json should look like this
 ```
