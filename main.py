@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchDriverException
 import pandas as pd
 from pandas import DataFrame
 import time
@@ -29,14 +30,11 @@ def main():
     command = os.popen(f"{chromedrvier_exe} --version")
     out = command.read()
 
-    if command.close() == 1:
-        print("Go to https://developer.chrome.com/docs/chromedriver/downloads. " \
-        "Download the ChromeDriver and copy the chromedriver.exe binary to the " \
-        "chromedriver_binary directory.")
-        exit()
+    version = "141.0.7390.54"
 
-    output_list = out.split(" ")
-    version = output_list[1]
+    if command.close() == None:
+        output_list = out.split(" ")
+        version = output_list[1]
 
     # Override the default user agent with a custom one
     user_agent = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{version} Safari/537.36"
@@ -49,7 +47,6 @@ def main():
     options.add_argument("--disable-blink-features=AutomationControlled")
 
     service = webdriver.ChromeService(executable_path=chromedrvier_exe)
-    driver = webdriver.Chrome(service=service, options=options)
 
     df = pd.DataFrame(
         {
@@ -60,16 +57,23 @@ def main():
         }
     )
 
-    # job scraping
-    url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}&start=0"
-    df, msg = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
-    print(msg)
+    try:
+        driver = webdriver.Chrome(service=service, options=options)
+
+        # job scraping
+        url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}&start=0"
+        df, msg = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
+        print(msg)
+
+        driver.close()
+    except NoSuchDriverException:
+        print("NoSuchDriverException: Go to https://developer.chrome.com/docs/chromedriver/downloads. " \
+        "Download the ChromeDriver and copy the chromedriver.exe binary to the " \
+        "chromedriver_binary directory.")
+        exit()
 
     # Write scrap jobs to a CSV file
     df.to_csv("data/indeed_jobs.csv", index=False)
-
-    driver.close()
-
 
 def scrap_indeed_jobs_page(
     driver: WebDriver, url: str, us_indeed_url: str, df: DataFrame
