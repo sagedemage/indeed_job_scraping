@@ -4,6 +4,10 @@ A web scraping program used to scrap the information of jobs in Indeed
 
 ## Setup the Project
 
+Download the ChromeDriver [here](https://developer.chrome.com/docs/chromedriver/downloads).
+
+Copy the chromedriver.exe binary to the chromedriver_binary directory.
+
 Create virtual environment
 ```
 python -m venv venv
