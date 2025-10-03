@@ -150,9 +150,6 @@ def scrap_indeed_jobs_page(
 
     print(f"Scraped {job_count} jobs")
 
-    with open("html_content/site.html", "w", encoding="utf-8") as f:
-        f.write(str(driver.page_source))
-
     return df, "Success"
 
 
