@@ -3,7 +3,6 @@ venv/
 __pycache__/
 website_screenshots/*.png
 .vscode/
-html_content/*.html
 data/*.csv
 logs/*.log
 node_modules/
