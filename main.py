@@ -12,6 +12,7 @@ import configparser
 import logging
 import os
 
+
 def main():
     config = configparser.ConfigParser()
     config.read("config.ini")
