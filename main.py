@@ -28,6 +28,13 @@ def main():
     chromedrvier_exe = ".\\chromedriver_binary\\chromedriver.exe"
     command = os.popen(f"{chromedrvier_exe} --version")
     out = command.read()
+
+    if command.close() == 1:
+        print("Go to https://developer.chrome.com/docs/chromedriver/downloads. " \
+        "Download the ChromeDriver and copy the chromedriver.exe binary to the " \
+        "chromedriver_binary directory.")
+        exit()
+
     output_list = out.split(" ")
     version = output_list[1]
 
