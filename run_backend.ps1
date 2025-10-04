@@ -1,1 +1,0 @@
-flask --app backend\main.py run
