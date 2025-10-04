@@ -1,0 +1,20 @@
+name: Lint the Codebase via Pylint
+
+on:
+  pull_request:
+    branches: [ 'main' ]
+  push:
+    branches: [ '*' ]
+
+jobs:
+  pylint_ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install Pylint
+        run: pip install pylint
+      - name: Lint the codebase using pylint
+        run: pylint main.py app/*.py
