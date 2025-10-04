@@ -38,7 +38,7 @@ def main():
 
     # Override the default user agent with a custom one
     user_agent = (
-        f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         f"Chrome/{version} Safari/537.36"
     )
