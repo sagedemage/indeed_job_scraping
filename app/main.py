@@ -1,7 +1,7 @@
 """Backend Server for serving job data"""
 
 from flask import Flask
-from flask import render_template, url_for
+from flask import render_template
 import pandas as pd
 
 app = Flask(__name__)
