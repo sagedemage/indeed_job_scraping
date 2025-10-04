@@ -1,0 +1,21 @@
+name: Check the format of the Codebase via Black
+
+on:
+  pull_request:
+    branches: [ 'main' ]
+  push:
+    branches: [ '*' ]
+
+jobs:
+  black_ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: psf/black@stable
+        with:
+          options: "--check --diff"
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          src: "*.py app/*.py"
+          use_pyproject: true
