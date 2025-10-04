@@ -10,12 +10,12 @@ Copy the chromedriver.exe binary to the chromedriver_binary directory.
 
 Create virtual environment
 ```
-python -m venv venv
+python -m venv .venv
 ```
 
 Activate the virtual environment on Windows
 ```
-.\venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 ```
 
 Install dependencies
@@ -23,28 +23,16 @@ Install dependencies
 pip install -r requirements.txt
 ```
 
-Install dependencies for the front-end server
-```
-cd frontend
-npm install
-```
-
 ## Run the Project
 
-Run the program
+Run the job scraper program
 ```
 python main.py
 ```
 
-Run the backend server with
+Run the app
 ```
 flask --app app\main.py run
-```
-
-Run the front-end server
-```
-cd frontend
-npm start
 ```
 
 ## Tools to Format and Lint the Codebase 
