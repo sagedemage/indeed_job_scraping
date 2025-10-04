@@ -67,13 +67,16 @@ def main():
 
         driver.close()
     except NoSuchDriverException:
-        print("NoSuchDriverException: Go to https://developer.chrome.com/docs/chromedriver/downloads. " \
-        "Download the ChromeDriver and copy the chromedriver.exe binary to the " \
-        "chromedriver_binary directory.")
+        print(
+            "NoSuchDriverException: Go to https://developer.chrome.com/docs/chromedriver/downloads. "
+            "Download the ChromeDriver and copy the chromedriver.exe binary to the "
+            "chromedriver_binary directory."
+        )
         exit()
 
     # Write scrap jobs to a CSV file
     df.to_csv("data/indeed_jobs.csv", index=False)
+
 
 def scrap_indeed_jobs_page(
     driver: WebDriver, url: str, us_indeed_url: str, df: DataFrame
