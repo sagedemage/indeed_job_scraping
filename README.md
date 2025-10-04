@@ -70,5 +70,10 @@ pylint --rcfile="" --generate-rcfile > .pylintrc
 ```
 
 ## Resources
-* [The following extensions want to relaunch the terminal to contribute to its environment #24822 - microsoft/vscode-python GitHub repository](https://github.com/microsoft/vscode-python/issues/24822)
-* [How to remove \xa0 from string in Python? - Stack Overflow](https://stackoverflow.com/questions/10993612/how-to-remove-xa0-from-string-in-python)
+- [The following extensions want to relaunch the terminal to contribute to its environment #24822 - microsoft/vscode-python GitHub repository](https://github.com/microsoft/vscode-python/issues/24822)
+- [How to remove \xa0 from string in Python? - Stack Overflow](https://stackoverflow.com/questions/10993612/how-to-remove-xa0-from-string-in-python)
+- [Selenium headless: How to bypass Cloudflare detection using Selenium - Stack Overflow](https://stackoverflow.com/questions/68289474/selenium-headless-how-to-bypass-cloudflare-detection-using-selenium)
+- [How to Modify Selenium navigator.webdriver to Avoid Anti-Bot Detection - zenrows](https://www.zenrows.com/blog/navigator-webdriver#how-to-modify-navigator-webdriver)
+- [Chrome specific functionality - Selenium](https://www.selenium.dev/documentation/webdriver/browsers/chrome/)
+- [List of Chromium Command Line Switches - Peter Beverloo](https://peter.sh/experiments/chromium-command-line-switches/)
+- [Chrome Flags for Tooling - GoogleChrome/chrome-launcher repository](https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md)
