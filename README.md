@@ -39,7 +39,12 @@ flask --app app/main.py run
 
 Format the codebase
 ```
-black main.py app/*.py
+black *.py app/*.py
+```
+
+Check the format of the codebase
+```
+black *.py app/*.py --check
 ```
 
 Lint the codebase
