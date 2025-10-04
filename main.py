@@ -32,7 +32,7 @@ def main():
 
     version = "141.0.7390.54"
 
-    if command.close() == None:
+    if command.close() is None:
         output_list = out.split(" ")
         version = output_list[1]
 
