@@ -45,7 +45,7 @@ def main():
     options.add_argument(f"--user-agent={user_agent}")
 
     # start headless browser
-    options.add_argument("--headless")
+    #options.add_argument("--headless")
 
     # disables setting navigator.webdriver to true
     options.add_argument("--disable-blink-features=AutomationControlled")
