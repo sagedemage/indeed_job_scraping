@@ -17,4 +17,4 @@ jobs:
       - name: Install Pylint
         run: pip install pylint
       - name: Lint the codebase using Pylint
-        run: pylint main.py app/*.py
+        run: pylint *.py app/*.py
