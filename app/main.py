@@ -6,12 +6,10 @@ import pandas as pd
 
 app = Flask(__name__)
 
-csv_file = "data/indeed_jobs.csv"
 
-
-def get_job_data():
+def get_job_data(csv_file_path: str):
     """Get the jobs data from a CSV file"""
-    df = pd.read_csv(csv_file)
+    df = pd.read_csv(csv_file_path)
 
     # Replace NaN values with an empty string
     df = df.fillna("")
@@ -35,7 +33,8 @@ def about():
 
 @app.route("/jobs")
 def jobs():
-    jobs_data = get_job_data()
+    jobs_csv_file = "data/indeed_jobs.csv"
+    jobs_data = get_job_data(jobs_csv_file)
     return render_template(
         "jobs.html", title="Indeed Jobs", jobs_data=jobs_data
     )
