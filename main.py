@@ -36,19 +36,23 @@ def main():
         output_list = out.split(" ")
         version = output_list[1]
 
-    # Override the default user agent with a custom one
+    """Chrome Flags"""
+    # override the default user agent with a custom one
     user_agent = (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         f"Chrome/{version} Safari/537.36"
     )
     options.add_argument(f"--user-agent={user_agent}")
-
-    # start headless browser
+    # run in headless mode
     # options.add_argument("--headless")
-
-    # disables setting navigator.webdriver to true
+    # disable the AutomationControlled Blink runtime-enabled feature
+    # to disable the navigator.webdriver automation property
     options.add_argument("--disable-blink-features=AutomationControlled")
+    # starts the browser maximized
+    options.add_argument("--start-maximized")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option("useAutomationExtension", False)
 
     service = webdriver.ChromeService(executable_path=chromedrvier_exe)
 
