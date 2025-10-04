@@ -38,3 +38,7 @@ def jobs():
     return render_template(
         "jobs.html", title="Indeed Jobs", jobs_data=jobs_data
     )
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html", title="404 Page Not Found")
