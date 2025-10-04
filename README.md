@@ -44,7 +44,7 @@ black *.py app/*.py
 
 Check the format of the codebase
 ```
-black *.py app/*.py --check
+black *.py app/*.py --check --diff
 ```
 
 Lint the codebase
