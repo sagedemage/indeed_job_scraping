@@ -38,7 +38,7 @@ python main.py
 
 Run the backend server with
 ```
-flask --app backend\main.py run
+flask --app app\main.py run
 ```
 
 Run the front-end server
@@ -51,12 +51,12 @@ npm start
 
 Format the codebase
 ```
-black main.py backend/*.py
+black main.py app/*.py
 ```
 
 Lint the codebase
 ```
-pylint main.py backend/*.py
+pylint main.py app/*.py
 ```
 
 ## Setup VSCode for Python
@@ -68,6 +68,12 @@ For Visual Studio Code to automatically use the virtual environment, the .\\.vsc
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.experiments.optOutFrom": ["pythonTerminalEnvVarActivation"]
 }
+```
+
+## Generate the Default Pylint Config
+Generate the default pylint config if needed
+```
+pylint --rcfile="" --generate-rcfile > .pylintrc
 ```
 
 ## Resources
