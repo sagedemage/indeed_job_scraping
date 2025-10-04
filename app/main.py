@@ -21,11 +21,11 @@ def get_job_data():
     # Replace NaN values with an empty string
     df = df.fillna("")
 
-    jobs = []
+    jobs_data = []
     for i in range(len(df.index)):
-        jobs.append(df.loc[i].to_dict())
+        jobs_data.append(df.loc[i].to_dict())
 
-    return jobs
+    return jobs_data
 
 
 @app.route("/")
@@ -40,5 +40,5 @@ def about():
 
 @app.route("/jobs")
 def jobs():
-    jobs = get_job_data()
-    return render_template("jobs.html", title="Indeed Jobs", jobs=jobs)
+    jobs_data = get_job_data()
+    return render_template("jobs.html", title="Indeed Jobs", jobs_data=jobs_data)
