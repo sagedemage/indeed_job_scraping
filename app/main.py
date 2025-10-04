@@ -41,4 +41,6 @@ def about():
 @app.route("/jobs")
 def jobs():
     jobs_data = get_job_data()
-    return render_template("jobs.html", title="Indeed Jobs", jobs_data=jobs_data)
+    return render_template(
+        "jobs.html", title="Indeed Jobs", jobs_data=jobs_data
+    )

@@ -37,7 +37,9 @@ def main():
         version = output_list[1]
 
     # Override the default user agent with a custom one
-    user_agent = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{version} Safari/537.36"
+    user_agent = (f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  f"Chrome/{version} Safari/537.36")
     options.add_argument(f"--user-agent={user_agent}")
 
     # start headless browser
@@ -61,16 +63,18 @@ def main():
         driver = webdriver.Chrome(service=service, options=options)
 
         # job scraping
-        url = f"{us_indeed_url}/jobs?q={query}&l={location}&fromage={date_posted_in_days}&start=0"
+        url = (f"{us_indeed_url}/jobs?q={query}"
+               f"&l={location}&fromage={date_posted_in_days}&start=0")
         df, msg = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
         print(msg)
 
         driver.close()
     except NoSuchDriverException:
         print(
-            "NoSuchDriverException: Go to https://developer.chrome.com/docs/chromedriver/downloads. "
-            "Download the ChromeDriver and copy the chromedriver.exe binary to the "
-            "chromedriver_binary directory."
+            "NoSuchDriverException: Go to "
+            "https://developer.chrome.com/docs/chromedriver/downloads. "
+            "Download the ChromeDriver and copy the chromedriver.exe "
+            "binary to the chromedriver_binary directory."
         )
         exit()
 
