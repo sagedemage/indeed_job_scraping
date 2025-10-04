@@ -32,7 +32,7 @@ python main.py
 
 Run the app
 ```
-flask --app app\main.py run
+flask --app app/main.py run
 ```
 
 ## Tools to Format and Lint the Codebase 
