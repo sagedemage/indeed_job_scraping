@@ -22,3 +22,21 @@ body {
   font: 14px Arial, Verdana, Helvetica, Tahoma, "Trebuchet MS", sans-serif;
   margin: 0;
 }
+
+.job-posting {
+  border: 2px solid rgb(0, 45, 159);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.job-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.apply {
+  margin-top: 10px;
+  background-color: rgb(0, 45, 159);
+  color: white;
+  border: 2px solid rgb(0, 45, 159);
+}

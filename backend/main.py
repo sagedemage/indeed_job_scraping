@@ -13,19 +13,18 @@ csv_file = "data/indeed_jobs.csv"
 def read_root():
     return {"msg": "Hello World!"}
 
-
-@app.get("/job-data")
-def job_data():
+def get_job_data():
+    """Get the jobs data from a CSV file"""
     df = pd.read_csv(csv_file)
 
     # Replace NaN values with an empty string
     df = df.fillna("")
 
-    rows = []
+    jobs = []
     for i in range(len(df.index)):
-        rows.append(df.loc[i].to_dict())
+        jobs.append(df.loc[i].to_dict())
 
-    return {"rows": rows}
+    return jobs
 
 @app.route("/")
 def home():
@@ -37,4 +36,5 @@ def about():
 
 @app.route("/jobs")
 def jobs():
-    return render_template("jobs.html", title="Indeed Jobs", jobs_data=["Frist Job", "Second Job"])
+    jobs = get_job_data()
+    return render_template("jobs.html", title="Indeed Jobs", jobs=jobs)

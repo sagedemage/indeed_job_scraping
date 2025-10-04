@@ -4,6 +4,14 @@
 
 {% block content %}
 <h1>Indeed Jobs</h1>
-<p>This is the jobs page.</p>
-<p>{{ jobs_data }}</p>
+<p>Welcome to the jobs page.</p>
+
+{% for job in jobs %}
+<p class="job-posting">
+    <span class="job-title">{{job.Job_Title}}</span><br>
+    {{job.Company}}<br>
+    {{job.Location}}<br>
+    <a href="{{job.Link}}" target="_blank"><button class="apply">Apply</button></a>
+</p>
+{% endfor %}
 {% endblock %}
