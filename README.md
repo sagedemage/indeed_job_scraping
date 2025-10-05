@@ -1,6 +1,6 @@
 # indeed_job_scraping
 
-A web scraping program used to scrap the information of jobs in Indeed
+A web scraping program written in Python. It is used to scrap the information of jobs in Indeed.
 
 ## Setup the Project
 
