@@ -78,3 +78,4 @@ pylint --rcfile="" --generate-rcfile > .pylintrc
 - [List of Chromium Command Line Switches - Peter Beverloo](https://peter.sh/experiments/chromium-command-line-switches/)
 - [Chrome Flags for Tooling - GoogleChrome/chrome-launcher repository](https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md)
 - [SeleniumBase](https://seleniumbase.io/)
+- [CDP Mode - SeleniumBase](https://seleniumbase.io/examples/cdp_mode/ReadMe/)
