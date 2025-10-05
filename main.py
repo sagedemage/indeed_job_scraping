@@ -36,7 +36,7 @@ def main():
         output_list = out.split(" ")
         version = output_list[1]
 
-    """Chrome Flags"""
+    # Chrome Flags
     # override the default user agent with a custom one
     user_agent = (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
