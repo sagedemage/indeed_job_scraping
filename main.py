@@ -44,7 +44,7 @@ def scrap_indeed_jobs_page(
 ) -> tuple[DataFrame, str]:
     html: str = ""
 
-    with SB(uc=True, test=True, locale="en") as sb:
+    with SB(uc=True, test=True, headless=True, locale="en") as sb:
         url = url
         sb.activate_cdp_mode(url)
         sb.sleep(10)
