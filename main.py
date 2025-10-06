@@ -102,10 +102,10 @@ def scrap_indeed_jobs_page(
         # replace non-brekaing space in Latin1 (ISO 8859-1) to a space
         location = location.replace("\xa0", " ")
 
-        logger.debug(f"job_title: {job_title}")
-        logger.debug(f"company: {company}")
-        logger.debug(f"location: {location}")
-        logger.debug(f"link: {link}\n")
+        logger.debug("job_title: %s", job_title)
+        logger.debug("company: %s", company)
+        logger.debug("location: %s", location)
+        logger.debug("link: %s\n", link)
 
         job_box_data = pd.DataFrame(
             {
