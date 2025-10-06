@@ -59,7 +59,9 @@ def scrap_indeed_jobs_page(
     # scrap job data
     soup = BeautifulSoup(html, "lxml")
 
-    job_count_element = soup.find("div", {"class", "jobsearch-JobCountAndSortPane-jobCount"})
+    job_count_element = soup.find(
+        "div", {"class", "jobsearch-JobCountAndSortPane-jobCount"}
+    )
 
     total_jobs = job_count_element.text
     print(f"{total_jobs} found")
@@ -77,7 +79,9 @@ def scrap_indeed_jobs_page(
     job_count = 0
     for box in boxes:
         # Job Title information
-        route = box.find("a", class_=lambda x: x and "JobTitle" in x).get("href")
+        route = box.find("a", class_=lambda x: x and "JobTitle" in x).get(
+            "href"
+        )
         link = us_indeed_url + route
         job_title = box.find(
             "a", class_=lambda x: x and "JobTitle" in x
