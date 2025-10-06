@@ -45,7 +45,6 @@ def scrap_indeed_jobs_page(
     html: str = ""
 
     with SB(uc=True, test=True, headless=True, locale="en") as sb:
-        url = url
         sb.activate_cdp_mode(url)
         sb.sleep(10)
         # attempt to click the CAPTCHA checkbox if present
