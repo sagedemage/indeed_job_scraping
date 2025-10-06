@@ -1,17 +1,11 @@
 """Indeed Job Scraper Program"""
 
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import NoSuchDriverException
+from seleniumbase import SB
 import pandas as pd
 from pandas import DataFrame
-import time
 import configparser
 import logging
-import os
 
 
 def main():
@@ -24,38 +18,6 @@ def main():
 
     us_indeed_url = "https://www.indeed.com"
 
-    options = webdriver.ChromeOptions()
-
-    chromedrvier_exe = ".\\chromedriver_binary\\chromedriver.exe"
-    command = os.popen(f"{chromedrvier_exe} --version")
-    out = command.read()
-
-    version = "141.0.7390.54"
-
-    if command.close() is None:
-        output_list = out.split(" ")
-        version = output_list[1]
-
-    # Chrome Flags
-    # override the default user agent with a custom one
-    user_agent = (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        f"Chrome/{version} Safari/537.36"
-    )
-    options.add_argument(f"--user-agent={user_agent}")
-    # run in headless mode
-    # options.add_argument("--headless")
-    # disable the AutomationControlled Blink runtime-enabled feature
-    # to disable the navigator.webdriver automation property
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    # starts the browser maximized
-    options.add_argument("--start-maximized")
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option("useAutomationExtension", False)
-
-    service = webdriver.ChromeService(executable_path=chromedrvier_exe)
-
     df = pd.DataFrame(
         {
             "Job_Title": [],
@@ -65,59 +27,43 @@ def main():
         }
     )
 
-    try:
-        driver = webdriver.Chrome(service=service, options=options)
-
-        # job scraping
-        url = (
-            f"{us_indeed_url}/jobs?q={query}"
-            f"&l={location}&fromage={date_posted_in_days}&start=0"
-        )
-        df, msg = scrap_indeed_jobs_page(driver, url, us_indeed_url, df)
-        print(msg)
-
-        driver.close()
-    except NoSuchDriverException:
-        print(
-            "NoSuchDriverException: Go to "
-            "https://developer.chrome.com/docs/chromedriver/downloads. "
-            "Download the ChromeDriver and copy the chromedriver.exe "
-            "binary to the chromedriver_binary directory."
-        )
-        exit()
+    # job scraping
+    url = (
+        f"{us_indeed_url}/jobs?q={query}"
+        f"&l={location}&fromage={date_posted_in_days}&start=0"
+    )
+    df, msg = scrap_indeed_jobs_page(url, us_indeed_url, df)
+    print(msg)
 
     # Write scrap jobs to a CSV file
     df.to_csv("data/indeed_jobs.csv", index=False)
 
 
 def scrap_indeed_jobs_page(
-    driver: WebDriver, url: str, us_indeed_url: str, df: DataFrame
+    url: str, us_indeed_url: str, df: DataFrame
 ) -> tuple[DataFrame, str]:
-    driver.get(url)
+    html: str = ""
 
-    time.sleep(10)
-
-    print(driver.title)
-
-    driver.save_screenshot("website_screenshots/chromedriver_result.png")
-
-    if driver.title == "Just a moment...":
-        return df, "Unable to load web page"
-
-    try:
-        # Get the number of jobs
-        job_count_element = driver.find_element(
-            By.CLASS_NAME, "jobsearch-JobCountAndSortPane-jobCount"
-        )
-
-        total_jobs = job_count_element.find_element(By.XPATH, "./span").text
-        print(f"{total_jobs} found")
-
-    except NoSuchElementException as e:
-        print(e)
+    with SB(uc=True, test=True, headless=True, locale="en") as sb:
+        sb.activate_cdp_mode(url)
+        sb.sleep(10)
+        # attempt to click the CAPTCHA checkbox if present
+        sb.uc_gui_click_captcha()
+        print(sb.get_page_title())
+        sb.save_screenshot("website_screenshots/chromedriver_result.png")
+        if sb.get_page_title() == "Just a moment...":
+            return df, "Unable to load web page"
+        html = sb.get_page_source()
 
     # scrap job data
-    soup = BeautifulSoup(driver.page_source, "lxml")
+    soup = BeautifulSoup(html, "lxml")
+
+    job_count_element = soup.find(
+        "div", {"class", "jobsearch-JobCountAndSortPane-jobCount"}
+    )
+
+    total_jobs = job_count_element.text
+    print(f"{total_jobs} found")
 
     boxes = soup.find_all("div", class_="job_seen_beacon")
 
@@ -132,8 +78,10 @@ def scrap_indeed_jobs_page(
     job_count = 0
     for box in boxes:
         # Job Title information
-        link = box.find("a", class_=lambda x: x and "JobTitle" in x).get("href")
-        link_full = us_indeed_url + link
+        route = box.find("a", class_=lambda x: x and "JobTitle" in x).get(
+            "href"
+        )
+        link = us_indeed_url + route
         job_title = box.find(
             "a", class_=lambda x: x and "JobTitle" in x
         ).text.strip()
@@ -154,20 +102,17 @@ def scrap_indeed_jobs_page(
         # replace non-brekaing space in Latin1 (ISO 8859-1) to a space
         location = location.replace("\xa0", " ")
 
-        job_info = {
-            "job_title": job_title,
-            "company": company,
-            "location": location,
-            "link": link_full,
-        }
-        logger.debug(job_info)
+        logger.debug("job_title: %s", job_title)
+        logger.debug("company: %s", company)
+        logger.debug("location: %s", location)
+        logger.debug("link: %s\n", link)
 
         job_box_data = pd.DataFrame(
             {
                 "Job_Title": [job_title],
                 "Company": [company],
                 "Location": [location],
-                "Link": [link_full],
+                "Link": [link],
             }
         )
 

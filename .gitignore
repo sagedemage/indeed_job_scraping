@@ -8,3 +8,4 @@ logs/*.log
 node_modules/
 .idea/
 chromedriver_binary/*.exe
+downloaded_files/
